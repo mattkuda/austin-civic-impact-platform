@@ -1,101 +1,131 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card } from "../../components/ui/card"
+import { Send } from "lucide-react"
+
+interface SubmissionForm {
+  description: string
+  location: string
+  latitude: string
+  longitude: string
+  category: string
+}
 
 export default function SubmitSuggestionPage() {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("")
-  const [sentiment, setSentiment] = useState("")
+  const [formData, setFormData] = useState<SubmissionForm>({
+    description: "",
+    location: "",
+    latitude: "",
+    longitude: "",
+    category: "",
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log({ title, description, category, sentiment })
+    // Here you would send the data to your backend
+    // The response would include a SubmissionId
+    console.log(formData)
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 hidden md:flex">
-            <Link className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">ACIP</span>
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              <Link href="/">Home</Link>
-              <Link href="/submit">Submit Suggestion</Link>
-              <Link href="/dashboard">Dashboard</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="container max-w-2xl mx-auto py-12">
-          <h1 className="text-3xl font-bold mb-6">Submit a Suggestion</h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                placeholder="Briefly describe your idea"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={80}
-                required
-              />
-            </div>
+    <main className="flex-1">
+      <div className="container max-w-2xl mx-auto py-8">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Submit a Suggestion</h1>
+        <Card className="border">
+          <form onSubmit={handleSubmit} className="space-y-6 p-6">
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                placeholder="Provide details about your suggestion and why it matters"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={500}
+                placeholder="Describe your suggestion in detail"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="min-h-[120px]"
                 required
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={setCategory}>
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="Enter the address or location description"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-end">
+                  <Label htmlFor="latitude">Latitude</Label>
+                </div>
+                <Input
+                  id="latitude"
+                  type="number"
+                  step="any"
+                  placeholder="30.2672"
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                  className="text-right"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-end">
+                  <Label htmlFor="longitude">Longitude</Label>
+                </div>
+                <Input
+                  id="longitude"
+                  type="number"
+                  step="any"
+                  placeholder="-97.7431"
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                  className="text-right"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category (Optional)</Label>
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="transportation">Transportation</SelectItem>
-                  <SelectItem value="parks">Parks</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
-                  {/* Add more categories as needed */}
+                <SelectContent className="bg-white">
+                  <SelectItem value="volunteer">Volunteer Need</SelectItem>
+                  <SelectItem value="infrastructure">Infrastructure Fix</SelectItem>
+                  <SelectItem value="community">Community Event</SelectItem>
+                  <SelectItem value="safety">Safety Concern</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="sentiment">Sentiment</Label>
-              <Input id="sentiment" value={sentiment} readOnly />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="attachment">Attachment (Optional)</Label>
-              <Input id="attachment" type="file" />
-            </div>
-            <Button type="submit">Submit My Suggestion</Button>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-primary to-secondary text-white"
+            >
+              <span className="flex items-center gap-2">
+                Submit Suggestion
+                <Send className="h-4 w-4" />
+              </span>
+            </Button>
           </form>
-        </div>
-      </main>
-      <footer className="w-full py-6 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built by the community, for the community.
-          </p>
-        </div>
-      </footer>
-    </div>
+        </Card>
+      </div>
+    </main>
   )
 }
 
