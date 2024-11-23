@@ -8,17 +8,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card } from "../../components/ui/card"
 import { Send } from "lucide-react"
-
-interface SubmissionForm {
-  description: string
-  location: string
-  latitude: string
-  longitude: string
-  category: string
-}
+import { RequestForm } from '@/types'
 
 export default function SubmitSuggestionPage() {
-  const [formData, setFormData] = useState<SubmissionForm>({
+  const [formData, setFormData] = useState<RequestForm>({
     description: "",
     location: "",
     latitude: "",
@@ -29,7 +22,7 @@ export default function SubmitSuggestionPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would send the data to your backend
-    // The response would include a SubmissionId
+    // The response would include a RequestId
     console.log(formData)
   }
 
