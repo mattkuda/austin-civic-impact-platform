@@ -1,12 +1,14 @@
 import { User } from './user'
 
 export interface Request {
-    id: number
+    id: string
     user: User
     description: string
-    location: string
-    latitude: number
-    longitude: number
+    locationName: string
+    location: {
+        lat: number
+        long: number
+    }
     category?: string
     createdAt: string
     upvoteCount: number

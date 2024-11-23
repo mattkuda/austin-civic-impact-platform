@@ -1,17 +1,10 @@
 'use client'
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { useQuery } from "@tanstack/react-query"
 import { Event } from '@/types'
-import { format, parseISO } from 'date-fns'
+import { Calendar } from "lucide-react"
+import { EventCard } from "@/components/event-card"
 
 const fetchEvents = async (): Promise<Event[]> => {
     const res = await fetch('/api/events')
@@ -19,10 +12,6 @@ const fetchEvents = async (): Promise<Event[]> => {
         throw new Error('Network response was not ok')
     }
     return res.json()
-}
-
-const formatDate = (date: string) => {
-    return format(parseISO(date), 'EEEE, MMMM do, yyyy')
 }
 
 export default function EventsPage() {
@@ -43,27 +32,18 @@ export default function EventsPage() {
         <main className="flex-1">
             <div className="container max-w-7xl mx-auto py-8">
                 <section className="mb-12">
-                    <h2 className="text-2xl font-semibold mb-4 text-gray-700">Featured Events</h2>
+                    <div className="flex justify-center items-center mb-4">
+                        <h1 className="text-4xl font-bold mb-4 text-gray-700 flex items-center gap-2">
+                            <Calendar size={32} />
+                            Events
+                        </h1>
+                    </div>
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-700">Featured</h2>
                     <Carousel className="w-full max-w-5xl mx-auto">
                         <CarouselContent className="-ml-2 md:-ml-4">
                             {events?.map((event) => (
                                 <CarouselItem key={event.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                                    <Card className="border mesh-gradient">
-                                        <CardHeader>
-                                            <CardTitle className="text-lg text-gray-900">{event.title}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p className="text-gray-600 font-medium">
-                                                {formatDate(event.date)}
-                                            </p>
-                                            <p className="text-gray-600 line-clamp-3 mt-2">
-                                                {event.description}
-                                            </p>
-                                            <p className="text-gray-600 mt-2">
-                                                {event.attendees} {event.attendees === 1 ? 'attendee' : 'attendees'}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
+                                    <EventCard event={event} variant="compact" showAttendButton={false} />
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
@@ -78,30 +58,7 @@ export default function EventsPage() {
                     </div>
                     <div className="space-y-4">
                         {events?.map((event) => (
-                            <Card key={event.id} className="border mesh-gradient">
-                                <CardHeader>
-                                    <CardTitle className="text-lg text-gray-900">{event.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-gray-600 font-medium">{formatDate(event.date)}</p>
-                                    <p className="text-gray-600 mt-2">{event.description}</p>
-                                    <div className="flex justify-between items-center mt-4">
-                                        <p className="text-gray-600">Category: {event.category}</p>
-                                        <p className="text-gray-600">
-                                            {event.attendees} {event.attendees === 1 ? 'attendee' : 'attendees'}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="flex justify-end items-center">
-                                    <Button
-                                        variant="outline"
-                                        className="hover:bg-[var(--primary)] hover:text-white transition-colors"
-                                        style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
-                                    >
-                                        Attend Event
-                                    </Button>
-                                </CardFooter>
-                            </Card>
+                            <EventCard key={event.id} event={event} />
                         ))}
                     </div>
                 </section>
