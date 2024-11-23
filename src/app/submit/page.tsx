@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card } from "../../components/ui/card"
-import { Send } from "lucide-react"
-import { RequestForm } from '@/types'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card } from "../../components/ui/card";
+import { Send } from "lucide-react";
+import { RequestForm } from "@/types";
 
 export default function SubmitSuggestionPage() {
   const [formData, setFormData] = useState<RequestForm>({
@@ -17,14 +17,44 @@ export default function SubmitSuggestionPage() {
     latitude: "",
     longitude: "",
     category: "",
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would send the data to your backend
-    // The response would include a RequestId
-    console.log(formData)
-  }
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: formData.description,
+          location: formData.location,
+          lat: parseFloat(formData.latitude),
+          long: parseFloat(formData.longitude),
+          category: formData.category,
+          userId: "1", // Hardcoded for now
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit suggestion");
+      }
+
+      const result = await response.json();
+      console.log("Submission successful:", result);
+
+      // Reset form
+      setFormData({
+        description: "",
+        location: "",
+        latitude: "",
+        longitude: "",
+        category: "",
+      });
+    } catch (error) {
+      console.error("Error submitting suggestion:", error);
+    }
+    console.log(formData);
+  };
 
   return (
     <main className="flex-1">
@@ -106,10 +136,7 @@ export default function SubmitSuggestionPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-primary to-secondary text-white"
-            >
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-secondary text-white">
               <span className="flex items-center gap-2">
                 Submit Suggestion
                 <Send className="h-4 w-4" />
@@ -119,6 +146,5 @@ export default function SubmitSuggestionPage() {
         </Card>
       </div>
     </main>
-  )
+  );
 }
-
