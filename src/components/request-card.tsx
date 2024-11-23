@@ -1,14 +1,32 @@
 import { Request } from "@/types"
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface RequestCardProps {
     request: Request
-    onUpvote?: (id: string) => void
     showUpvoteButton?: boolean
 }
 
-export function RequestCard({ request, onUpvote, showUpvoteButton = true }: RequestCardProps) {
+export function RequestCard({ request, showUpvoteButton = true }: RequestCardProps) {
+    const queryClient = useQueryClient()
+
+    const upvoteMutation = useMutation({
+        mutationFn: async (requestId: string) => {
+            const response = await fetch(`/api/submissions/upvote/${requestId}`, {
+                method: 'POST',
+            })
+            if (!response.ok) {
+                throw new Error('Failed to upvote')
+            }
+            return response.json()
+        },
+        onSuccess: () => {
+            // Invalidate and refetch requests
+            queryClient.invalidateQueries({ queryKey: ['requests'] })
+        },
+    })
+
     return (
         <Card className="border mesh-gradient">
             <CardHeader>
@@ -26,9 +44,10 @@ export function RequestCard({ request, onUpvote, showUpvoteButton = true }: Requ
                         variant="outline"
                         className="hover:bg-[var(--primary)] hover:text-white transition-colors"
                         style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
-                        onClick={() => onUpvote?.(request.id)}
+                        onClick={() => upvoteMutation.mutate(request._id)}
+                        disabled={upvoteMutation.isPending}
                     >
-                        Upvote
+                        {upvoteMutation.isPending ? 'Upvoting...' : 'Upvote'}
                     </Button>
                 )}
             </CardFooter>

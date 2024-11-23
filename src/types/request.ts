@@ -1,7 +1,8 @@
 import { User } from './user'
 
 export interface Request {
-    id: string
+    _id: string
+    id?: string
     user: User
     description: string
     locationName: string

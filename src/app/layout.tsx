@@ -13,7 +13,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <div className="flex flex-col min-h-screen bg-gray-50">
+          <div className="flex flex-col min-h-screen bg-gray-50 px-4">
             <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
               <div className="container max-w-7xl mx-auto flex h-16 items-center">
                 <Link className="flex items-center space-x-2" href="/">
