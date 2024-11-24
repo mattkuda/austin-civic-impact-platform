@@ -4,10 +4,11 @@ import client from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
 export async function POST(
-    request: NextRequest
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const { id } = await params;
+    console.log("upvote request", id)
 
     try {
         await client.connect()
