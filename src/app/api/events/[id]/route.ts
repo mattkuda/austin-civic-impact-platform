@@ -1,17 +1,18 @@
-import { NextResponse } from 'next/server'
-import client from '@/lib/mongodb';
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    try {
-        await client.connect();
-        const db = client.db("acip");
-        const event = await db.collection("events").findOne({ id: params.id });
-        console.log("Event found", event);
-        return NextResponse.json(event, { status: 200 });
-    } catch (e) {
-        console.error("Failed to find event:", e);
-        return NextResponse.json({ error: "Failed to find event" }, { status: 500 });
-    } finally {
-        await client.close();
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    // Mock event data
+    const mockEvent = {
+        id: params.id,
+        title: "Community Clean-up Day",
+        description: "Join us for a day of community service and beautification.",
+        date: "2024-03-15",
+        attendees: 25,
+        category: "volunteer"
     }
+
+    return NextResponse.json(mockEvent)
 } 
