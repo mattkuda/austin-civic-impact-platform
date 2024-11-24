@@ -2,13 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Calendar, ChevronRight, Lightbulb, Plus } from "lucide-react";
+import { Calendar, ChevronRight, Lightbulb, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { EventCard } from "../components/event-card";
 import { useQuery } from "@tanstack/react-query";
 import { Event, Request } from "../types";
 import { RequestCard } from "@/components/request-card";
 import { useState } from "react";
+import Map from "@/components/map";
 
 // // Mock data for events and requests
 // const events = [
@@ -130,7 +131,23 @@ export default function HomePage() {
             <CarouselNext />
           </Carousel>
         </section>
-
+        <section className="mb-12">
+          <div className="text-2xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+            <MapPin size={32} />
+            <h2>Community Map</h2>
+          </div>
+          <div className="rounded-lg overflow-hidden border border-gray-200">
+            <Map
+              markers={
+                requestsQuery.data?.map((request) => ({
+                  lat: request.location.lat,
+                  lng: request.location.long,
+                  title: request.locationName ?? "" + " - " + request.description ?? "",
+                })) ?? []
+              }
+            />
+          </div>
+        </section>
         <section className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <div className="text-2xl font-semibold text-gray-700 flex items-center gap-2 align-middle">
