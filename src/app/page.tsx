@@ -1,19 +1,14 @@
-'use client'
+"use client";
 
-import { Button } from "@/components/ui/button"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import { Calendar, ChevronRight, Lightbulb, Plus } from "lucide-react"
-import Link from "next/link"
-import { EventCard } from "../components/event-card"
-import { useQuery } from "@tanstack/react-query"
-import { Event, Request } from "../types"
-import { RequestCard } from "@/components/request-card"
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Calendar, ChevronRight, Lightbulb, Plus } from "lucide-react";
+import Link from "next/link";
+import { EventCard } from "../components/event-card";
+import { useQuery } from "@tanstack/react-query";
+import { Event, Request } from "../types";
+import { RequestCard } from "@/components/request-card";
+import { useState } from "react";
 
 // // Mock data for events and requests
 // const events = [
@@ -31,33 +26,83 @@ import { RequestCard } from "@/components/request-card"
 // ]
 
 const fetchEvents = async (): Promise<Event[]> => {
-  const res = await fetch('/api/events')
+  const res = await fetch("/api/events");
   if (!res.ok) {
-    throw new Error('Network response was not ok')
+    throw new Error("Network response was not ok");
   }
-  return res.json()
-}
+  return res.json();
+};
 
 const fetchRequests = async (): Promise<Request[]> => {
-  const res = await fetch('/api/requests')
+  const res = await fetch("/api/requests");
   if (!res.ok) {
-    throw new Error('Network response was not ok')
+    throw new Error("Network response was not ok");
   }
-  return res.json()
-}
+  return res.json();
+};
 
 export default function HomePage() {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isClustering, setIsClustering] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
-  const { data: events } = useQuery<Event[]>({
-    queryKey: ['events'],
+  const eventsQuery = useQuery<Event[]>({
+    queryKey: ["events"],
     queryFn: fetchEvents,
-  })
+  });
 
-  const { data: requests } = useQuery<Request[]>({
-    queryKey: ['requests'],
+  const requestsQuery = useQuery<Request[]>({
+    queryKey: ["requests"],
     queryFn: fetchRequests,
-  })
+  });
 
+  const runClustering = async () => {
+    try {
+      setIsClustering(true);
+      const response = await fetch("/api/events/generate", { method: "POST" });
+      if (!response.ok) throw new Error("Clustering failed");
+      const data = await response.json();
+      console.log("Clustering complete!", data);
+      requestsQuery.refetch();
+    } catch (error) {
+      console.error("Error:", error);
+      console.log("Failed to run clustering");
+    } finally {
+      setIsClustering(false);
+    }
+  };
+
+  const resetClusters = async () => {
+    try {
+      setIsResetting(true);
+      const response = await fetch("/api/events/generate", { method: "DELETE" });
+      if (!response.ok) throw new Error("Clustering failed");
+      const data = await response.json();
+      console.log("Clustering complete!", data);
+      requestsQuery.refetch();
+    } catch (error) {
+      console.error("Error:", error);
+      console.log("Failed to reset clustering");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const generateEvents = async () => {
+    try {
+      setIsGenerating(true);
+      const response = await fetch("/api/events/generate");
+      if (!response.ok) throw new Error("Event generation failed");
+      const data = await response.json();
+      console.log("Event generation complete!", data);
+      eventsQuery.refetch();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to generate events");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   return (
     <main className="flex-1">
       <div className="container max-w-7xl mx-auto py-8">
@@ -67,14 +112,15 @@ export default function HomePage() {
             <Calendar size={32} />
             <h2>Upcoming Events</h2>
             <Button variant="link" size="sm" className="text-gray-500" asChild>
-              <Link href="/events">View All
+              <Link href="/events">
+                View All
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
           <Carousel className="w-full max-w-5xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
-              {events?.map((event) => (
+              {eventsQuery.data?.map((event) => (
                 <CarouselItem key={event.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                   <EventCard event={event} variant="compact" showAttendButton={false} />
                 </CarouselItem>
@@ -91,11 +137,39 @@ export default function HomePage() {
               <Lightbulb size={32} />
               <h2>Community Requests</h2>
               <Button variant="link" size="sm" className="text-gray-500" asChild>
-                <Link href="/requests">View All
+                <Link href="/requests">
+                  View All
                   <ChevronRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
+
+            <div className="space-x-4">
+              <Button
+                onClick={runClustering}
+                disabled={isClustering}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+              >
+                {isClustering ? "Processing..." : "Run Clustering"}
+              </Button>
+
+              <Button
+                onClick={resetClusters}
+                disabled={isResetting}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+              >
+                {isResetting ? "Processing..." : "Reset Clustering"}
+              </Button>
+
+              <Button
+                onClick={generateEvents}
+                disabled={isGenerating}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+              >
+                {isGenerating ? "Generating..." : "Generate Events"}
+              </Button>
+            </div>
+
             <Button asChild size="sm" className="bg-gradient-to-r from-primary to-secondary text-white">
               <Link href="/submit" className="flex items-center gap-2">
                 Submit Request
@@ -104,16 +178,12 @@ export default function HomePage() {
             </Button>
           </div>
           <div className="space-y-4">
-            {requests?.map((request) => (
-              <RequestCard
-                key={request.id}
-                request={request}
-              />
+            {requestsQuery.data?.map((request) => (
+              <RequestCard key={request.id} request={request} />
             ))}
           </div>
         </section>
       </div>
     </main>
-  )
+  );
 }
-

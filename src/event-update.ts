@@ -1,6 +1,4 @@
 import LlamaStackClient from 'llama-stack-client';
-import mongoClient from '@/lib/mongodb';
-import geohash from 'ngeohash';
 import { GeneratedEvent, Request } from './types';
 
 const ENDPOINT = "https://llama-stack.together.ai";
@@ -8,41 +6,12 @@ const MODEL = "Llama3.1-8B-Instruct";
 
 const llamaClient = new LlamaStackClient({ baseURL: ENDPOINT });
 
-const requests = [{
-    _id: "674254e4400daa7ce6e048dd",
-    user: null,
-    description: "Request for community park maintenance.",
-    location: { lat: 40.7128, long: -74.006 },
-    locationName: "Central Park",
-    category: "maintenance",
-    createdAt: "2024-03-01T12:00:00Z",
-    upvoteCount: 0
-}, {
-    _id: "674254e4400daa7ce6e048de",
-    user: null,
-    description: "Request for new playground equipment.",
-    location: { lat: 40.7128, long: -74.006 },
-    locationName: "Riverside Park",
-    category: "improvement",
-    createdAt: "2024-03-02T12:00:00Z",
-    upvoteCount: 0,
-}] as Request[];
-
-function groupRequestsByGeohash(requests: Request[], precision: number = 5) {
-    return requests.reduce((groups, request) => {
-        const hash = geohash.encode(request.location.lat, request.location.long, precision);
-        if (!groups[hash]) groups[hash] = [];
-        groups[hash].push(request);
-        return groups;
-    }, {} as Record<string, Request[]>);
-}
-
 function buildLlmPrompt(requests: Request[]) {
     const requestList = requests.map(req => `- ${req.description} (ID: ${req._id})`).join('\n');
     return `Based on these community requests:
 ${requestList}
 
-Generate a JSON array of suggested community events. Each event should have:
+Generate a JSON array of at most ${Math.floor(requests.length / 2)} suggested community events. Each event should have:
 {
   "title": "string",
   "description": "string",
@@ -59,16 +28,10 @@ Respond with ONLY valid JSON, no additional text.`;
 
 function parseLlmResponse(response: unknown): GeneratedEvent[] {
     try {
-        // Parse the initial response
         const responseJson: LlamaStackClient.InferenceChatCompletionResponse.ChatCompletionResponse =
             JSON.parse((response as unknown as string).slice(6));
-
-        // Get the content string from the completion message
         const content = responseJson.completion_message.content;
-
-        // Parse the content string directly into GeneratedEvent array
         const events = JSON.parse(content as string) as GeneratedEvent[];
-
         console.log('Parsed events:', events);
         return events;
     } catch (error) {
@@ -80,22 +43,16 @@ function parseLlmResponse(response: unknown): GeneratedEvent[] {
 
 async function generateEventsForGroup(groupedRequests: Record<string, Request[]>) {
     const events: GeneratedEvent[] = [];
-
     for (const [geohash, requests] of Object.entries(groupedRequests)) {
         const prompt = buildLlmPrompt(requests);
-
         try {
-
             console.log('LLM prompt', prompt);
             const response = await llamaClient.inference.chatCompletion({
                 messages: [{ role: 'user', content: prompt }],
                 model: MODEL,
             });
-
             console.log('LLM response', response);
-
             const suggestedEvents = parseLlmResponse(response);
-
             suggestedEvents.forEach(event => {
                 events.push({
                     ...event,
@@ -111,24 +68,16 @@ async function generateEventsForGroup(groupedRequests: Record<string, Request[]>
     return events;
 }
 
-async function main() {
+export async function generateEvents(unfilledRequests: Record<string, Request[]>) {
     try {
-        if (!requests.length) {
+        if (!unfilledRequests.length) {
             console.log("No unresolved requests found.");
             return;
         }
-
-        const groupedRequests = groupRequestsByGeohash(requests);
-        console.log("Grouped requests by geohash:", groupedRequests);
-
-        const events = await generateEventsForGroup(groupedRequests);
+        const events = await generateEventsForGroup(unfilledRequests);
         console.log("Generated events:", events);
-
+        return events;
     } catch (err) {
         console.error("Error in main function:", err);
-    } finally {
-        await mongoClient.close();
     }
 }
-
-main();

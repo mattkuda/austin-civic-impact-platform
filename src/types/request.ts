@@ -5,6 +5,7 @@ export interface Request {
     id?: string
     user: User
     description: string
+    cluster?: number
     locationName: string
     location: {
         lat: number
