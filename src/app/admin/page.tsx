@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
 import { useState } from "react"
 
 export default function AdminPage() {
