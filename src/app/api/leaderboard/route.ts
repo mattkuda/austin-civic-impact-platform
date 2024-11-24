@@ -1,19 +1,14 @@
-import { LeaderboardEntry } from "@/types";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
+// Mock data for now
+const mockLeaderboard = [
+  { rank: 1, name: "John Doe", points: 1200, eventsParticipated: 15 },
+  { rank: 2, name: "Jane Smith", points: 1100, eventsParticipated: 12 },
+  { rank: 3, name: "Bob Johnson", points: 900, eventsParticipated: 10 },
+  { rank: 4, name: "Alice Brown", points: 800, eventsParticipated: 8 },
+  { rank: 5, name: "Charlie Wilson", points: 700, eventsParticipated: 7 },
+]
 
 export async function GET() {
-  const leaderboard: LeaderboardEntry[] = [
-    { rank: 1, name: "John Doe", points: 100, eventsParticipated: 5 },
-    { rank: 2, name: "Jane Doe", points: 90, eventsParticipated: 4 },
-    { rank: 3, name: "Jim Beam", points: 80, eventsParticipated: 3 },
-    { rank: 4, name: "John Doe", points: 70, eventsParticipated: 2 },
-    { rank: 5, name: "Jane Doe", points: 60, eventsParticipated: 1 },
-    { rank: 6, name: "Jim Beam", points: 50, eventsParticipated: 1 },
-    { rank: 7, name: "John Doe", points: 40, eventsParticipated: 1 },
-    { rank: 8, name: "Jane Doe", points: 30, eventsParticipated: 1 },
-    { rank: 9, name: "Jim Beam", points: 20, eventsParticipated: 1 },
-    { rank: 10, name: "John Doe", points: 10, eventsParticipated: 1 },
-  ];
-  return NextResponse.json(leaderboard);
+  return NextResponse.json(mockLeaderboard)
 }

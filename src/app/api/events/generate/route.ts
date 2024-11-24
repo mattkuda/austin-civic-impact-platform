@@ -52,6 +52,11 @@ export async function GET() {
 
     const groupedRequests = unfilledRequests.map((rec) => [rec._id, rec.requests]) as unknown as Record<string, Request[]>; // Update type here    console.log(groupedRequests);
     const events = await generateEvents(groupedRequests);
+    for (const e of events) {
+      console.log(e.requests);
+      //Update the requests to be with the parent event id
+      await collection.updateMany({ _id: { $in: e.requests } }, { $set: { eventId: e._id } });
+    }
     await collection.updateMany({ _id: { $in: unfilledRequests.map(r => r._id) } }, { $set: { status: "filled" } });
     await db.collection("events").insertMany(events);
 

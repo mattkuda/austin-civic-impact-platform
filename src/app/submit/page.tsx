@@ -126,11 +126,6 @@ export default function SubmitSuggestionPage() {
           <Lightbulb size={32} />
           Submit Request
         </h1>
-        <Button variant="outline" onClick={() => toast({
-          title: "Success!",
-          description: "Your request has been submitted successfully.",
-          variant: "success",
-        })}>Toast</Button>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
