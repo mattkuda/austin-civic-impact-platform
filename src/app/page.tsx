@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Calendar, ChevronRight, Lightbulb, MapPin, Plus, Trophy } from "lucide-react";
+import { Calendar, ChevronRight, Lightbulb, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { EventCard } from "../components/event-card";
 import { useQuery } from "@tanstack/react-query";
-import { Event, LeaderboardEntry, Request } from "../types";
+import { Event, Request } from "../types";
 import { RequestCard } from "@/components/request-card";
 import { useState } from "react";
 import Map from "@/components/map";
@@ -43,14 +43,6 @@ const fetchRequests = async (): Promise<Request[]> => {
   return res.json();
 };
 
-const fetchLeaderboard = async (): Promise<LeaderboardEntry[]> => {
-  const res = await fetch("/api/leaderboard");
-  if (!res.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return res.json();
-};
-
 export default function HomePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isClustering, setIsClustering] = useState(false);
@@ -64,11 +56,6 @@ export default function HomePage() {
   const requestsQuery = useQuery<Request[]>({
     queryKey: ["requests"],
     queryFn: fetchRequests,
-  });
-
-  const leaderboardQuery = useQuery<LeaderboardEntry[]>({
-    queryKey: ["leaderboard"],
-    queryFn: fetchLeaderboard,
   });
 
   const runClustering = async () => {
@@ -175,7 +162,6 @@ export default function HomePage() {
                 </Link>
               </Button>
             </div>
-
             <div className="space-x-4">
               <Button
                 onClick={runClustering}
