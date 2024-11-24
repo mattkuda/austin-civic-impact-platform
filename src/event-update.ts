@@ -60,12 +60,12 @@ async function generateEventsForGroup(groupedRequests: Record<string, Request[]>
     return events;
 }
 
-const updateRequest = async (requestId: string, eventId: string) => {
-    await fetch(`/api/requests/${requestId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ eventId }),
-    });
-}
+// const updateRequest = async (requestId: string, eventId: string) => {
+//     await fetch(`/api/requests/${requestId}`, {
+//         method: 'PUT',
+//         body: JSON.stringify({ eventId }),
+//     });
+// }
 
 export async function generateEvents(unfilledRequests: Record<string, Request[]>) {
     try {
@@ -74,12 +74,11 @@ export async function generateEvents(unfilledRequests: Record<string, Request[]>
             return;
         }
         const events = await generateEventsForGroup(unfilledRequests);
-        // Go throught the events, for each request in the event, update the request with the event id
-        for (const event of events) {
-            for (const requestId of event.requests) {
-                await updateRequest(requestId, event._id.toString());
-            }
-        }
+        // for (const event of events) {
+        //     for (const requestId of event.requests) {
+        //         await updateRequest(requestId, event._id.toString());
+        //     }
+        // }
         console.log("Generated events:", events);
         return events;
     } catch (err) {
