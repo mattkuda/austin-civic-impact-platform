@@ -28,8 +28,8 @@ export default function SubmitSuggestionPage() {
   const [formData, setFormData] = useState({
     description: "",
     locationName: "",
-    latitude: AUSTIN_CENTER.lat.toString(),
-    longitude: AUSTIN_CENTER.lng.toString(),
+    lat: AUSTIN_CENTER.lat.toString(),
+    long: AUSTIN_CENTER.lng.toString(),
     category: ""
   });
   const [markerPosition, setMarkerPosition] = useState(AUSTIN_CENTER);
@@ -43,8 +43,8 @@ export default function SubmitSuggestionPage() {
       setMarkerPosition({ lat, lng });
       setFormData(prev => ({
         ...prev,
-        latitude: lat.toString(),
-        longitude: lng.toString()
+        lat: lat.toString(),
+        long: lng.toString()
       }));
 
       // Reverse geocode to get address
@@ -75,8 +75,8 @@ export default function SubmitSuggestionPage() {
         setMarkerPosition(newPosition);
         setFormData(prev => ({
           ...prev,
-          latitude: lat.toString(),
-          longitude: lng.toString(),
+          lat: lat.toString(),
+          long: lng.toString(),
           locationName: results[0].formatted_address
         }));
 
@@ -184,20 +184,20 @@ export default function SubmitSuggestionPage() {
             />
             <div className="grid grid-cols-2 gap-4 mt-2">
               <div>
-                <Label htmlFor="latitude">Latitude</Label>
+                <Label htmlFor="lat">lat</Label>
                 <Input
-                  id="latitude"
-                  value={formData.latitude}
-                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                  id="lat"
+                  value={formData.lat}
+                  onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="longitude">Longitude</Label>
+                <Label htmlFor="long">long</Label>
                 <Input
-                  id="longitude"
-                  value={formData.longitude}
-                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                  id="long"
+                  value={formData.long}
+                  onChange={(e) => setFormData({ ...formData, long: e.target.value })}
                   required
                 />
               </div>
@@ -225,6 +225,7 @@ export default function SubmitSuggestionPage() {
               <Send className="h-4 w-4" />
             </span>
           </Button>
+          {JSON.stringify(formData)}
         </form>
       </div>
     </main>
