@@ -55,7 +55,7 @@ export async function GET() {
     for (const e of events) {
       console.log(e.requests);
       //Update the requests to be with the parent event id
-      await collection.updateMany({ _id: { $in: e.requests } }, { $set: { eventId: e._id } });
+      // await collection.updateMany({ _id: { $in: e.requests } }, { $set: { eventId: e._id } });
     }
     await collection.updateMany({ _id: { $in: unfilledRequests.map(r => r._id) } }, { $set: { status: "filled" } });
     await db.collection("events").insertMany(events);
