@@ -1,4 +1,7 @@
+import { Request } from './request'
+
 export interface Event {
+    _id?: string
     id: string
     title: string
     description: string
@@ -7,6 +10,9 @@ export interface Event {
     location?: string
     toolsRequired?: string
     category: string
+    completedRequestIds?: string[]
+    completedRequests?: Request[]
+    createdAt?: string
 }
 
 export interface EventResponse {

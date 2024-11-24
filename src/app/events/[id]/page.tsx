@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 
 const fetchEvent = async (id: string): Promise<Event> => {
+    console.log("Fetching event", id)
     const res = await fetch(`/api/events/${id}`)
     if (!res.ok) {
         throw new Error('Network response was not ok')
@@ -69,7 +70,7 @@ export default function EventPage({ params }: { params: { id: string } }) {
                 >
                     ← Back to Events
                 </Button>
-
+                {JSON.stringify(event)}
                 <Card className="border mesh-gradient">
                     <CardHeader>
                         <CardTitle className="text-3xl font-bold text-gray-900">
@@ -114,6 +115,26 @@ export default function EventPage({ params }: { params: { id: string } }) {
                         </Button>
                     </CardFooter>
                 </Card>
+                <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
+                {JSON.stringify(event)}
+                {event.completedRequests && event.completedRequests.length > 0 && (
+                    <div className="mt-8">
+                        <h3 className="text-xl font-semibold mb-4">Completed Requests</h3>
+                        <div className="space-y-4">
+                            {event.completedRequests.map((request) => (
+                                <div
+                                    key={request._id}
+                                    className="p-4 rounded-lg border border-gray-200 bg-gray-50"
+                                >
+                                    <p className="font-medium">{request.description}</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Requested by: {request.user.name}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </main>
     )
