@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "llama": "tsx src/app/api/llama.ts",
-    "event-update": "tsx src/event-update.ts"
+    "event-update": "tsx src/event-update.ts",
+    "sim": "tsx src/similarity.ts"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.0",
