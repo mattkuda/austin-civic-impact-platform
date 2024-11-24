@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 const fetchEvent = async (id: string): Promise<Event> => {
     console.log("Fetching event", id)
@@ -22,16 +23,22 @@ export default function EventPage({ params }: { params: { id: string } }) {
     const router = useRouter()
     const { toast } = useToast()
 
+    const [attendees, setAttendees] = useState(0)
+
     const { data: event, isLoading, error } = useQuery<Event>({
         queryKey: ['event', params.id],
         queryFn: () => fetchEvent(params.id),
     })
 
-    const handleAttend = async () => {
+    const handleAttend = async (eventClick: React.MouseEvent<HTMLButtonElement>) => {
+        // Stop the click event from bubbling up to the card
+        eventClick.stopPropagation()
+
         try {
-            const res = await fetch(`/api/events/attend/${params.id}`, {
+            const res = await fetch(`/api/events/attend/${event.id}`, {
                 method: 'POST',
             })
+
             if (!res.ok) throw new Error('Failed to attend event')
 
             toast({
@@ -39,6 +46,7 @@ export default function EventPage({ params }: { params: { id: string } }) {
                 description: "You're now registered for this event.",
                 variant: "success",
             })
+            setAttendees(attendees + 1)
         } catch (error) {
             toast({
                 title: "Error",
@@ -70,7 +78,6 @@ export default function EventPage({ params }: { params: { id: string } }) {
                 >
                     ← Back to Events
                 </Button>
-                {JSON.stringify(event)}
                 <Card className="border mesh-gradient">
                     <CardHeader>
                         <CardTitle className="text-3xl font-bold text-gray-900">
@@ -83,7 +90,7 @@ export default function EventPage({ params }: { params: { id: string } }) {
                             </div>
                             <div className="flex items-center gap-2 text-gray-600">
                                 <Users className="h-5 w-5" />
-                                <span>{event.attendees} attendees</span>
+                                <span>{attendees} attendees</span>
                             </div>
                             {event.location && (
                                 <div className="flex items-center gap-2 text-gray-600">
@@ -116,7 +123,6 @@ export default function EventPage({ params }: { params: { id: string } }) {
                     </CardFooter>
                 </Card>
                 <h2 className="text-2xl font-bold mb-4">Completed Requests</h2>
-                {JSON.stringify(event)}
                 {event.completedRequests && event.completedRequests.length > 0 && (
                     <div className="mt-8">
                         <h3 className="text-xl font-semibold mb-4">Completed Requests</h3>

@@ -5,9 +5,13 @@ import { Event, Request } from '@/types'
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        console.log("in event get id")
+        const { id } = await params;
+
+
         const client = await clientPromise
         const db = client.db("acip")
 
@@ -15,13 +19,15 @@ export async function GET(
 
         // Try to use ObjectId if it's a valid MongoDB ID, otherwise use string id
         try {
-            query = { _id: new ObjectId(params.id) }
+            query = { _id: new ObjectId(id) }
         } catch {
-            query = { id: params.id }
+            query = { id: id }
         }
 
         // Get the event
         const event = await db.collection<Event>("events").findOne(query)
+
+        console.log("event", event)
 
         if (!event) {
             return NextResponse.json(

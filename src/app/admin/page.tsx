@@ -62,7 +62,7 @@ export default function AdminPage() {
           {/* Clustering Section */}
           <div className="p-6 border rounded-lg bg-white shadow-sm">
             <h3 className="text-xl font-bold mb-2">
-              ⭐️ Run Clustering
+              🌎 Run Clustering
             </h3>
             <p className="text-gray-600 mb-4">
               Groups similar requests together based on location and category.
@@ -78,7 +78,7 @@ export default function AdminPage() {
           </div>
           {/* Event Generation Section */}
           <div className="p-6 border rounded-lg bg-white shadow-sm">
-            <h3 className="text-xl font-bold mb-2">Generate Events</h3>
+            <h3 className="text-xl font-bold mb-2">⭐️ Generate Events</h3>
             <p className="text-gray-600 mb-4">
               Creates events based on clustered requests using AI.
               The system will analyze request groups and suggest appropriate community events.

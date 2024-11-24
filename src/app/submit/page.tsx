@@ -232,7 +232,6 @@ export default function SubmitSuggestionPage() {
               <Send className="h-4 w-4" />
             </span>
           </Button>
-          {JSON.stringify(formData)}
         </form>
       </div>
     </main>

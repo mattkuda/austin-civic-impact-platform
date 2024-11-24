@@ -25,7 +25,6 @@ export default function RequestsPage() {
     queryFn: fetchRequests,
   });
 
-  console.log(JSON.stringify(requests, null, 2));
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-96">Loading...</div>;
