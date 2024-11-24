@@ -5,10 +5,10 @@ import { useQuery } from "@tanstack/react-query"
 import { RequestCard } from "@/components/request-card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Lightbulb, Plus } from "lucide-react"
 
 const fetchRequests = async (): Promise<Request[]> => {
-    const res = await fetch('/api/submissions')
+    const res = await fetch('/api/requests')
     if (!res.ok) {
         throw new Error('Network response was not ok')
     }
@@ -35,10 +35,13 @@ export default function RequestsPage() {
         <main className="flex-1">
             <div className="container max-w-7xl mx-auto py-8">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800">Community Requests</h1>
+                    <h1 className="text-4xl font-bold text-gray-800 flex items-center gap-2">
+                        <Lightbulb size={32} />
+                        Community Requests
+                    </h1>
                     <Button asChild size="sm" className="bg-gradient-to-r from-primary to-secondary text-white">
                         <Link href="/submit" className="flex items-center gap-2">
-                            Create Request
+                            Submit Request
                             <Plus className="h-4 w-4" />
                         </Link>
                     </Button>
@@ -48,9 +51,6 @@ export default function RequestsPage() {
                         <RequestCard
                             key={request.id}
                             request={request}
-                            onUpvote={async (id) => {
-                                console.log('Upvote request:', id)
-                            }}
                         />
                     ))}
                 </div>

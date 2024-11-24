@@ -13,7 +13,7 @@ export function RequestCard({ request, showUpvoteButton = true }: RequestCardPro
 
     const upvoteMutation = useMutation({
         mutationFn: async (requestId: string) => {
-            const response = await fetch(`/api/submissions/upvote/${requestId}`, {
+            const response = await fetch(`/api/requests/upvote/${requestId}`, {
                 method: 'POST',
             })
             if (!response.ok) {

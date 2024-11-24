@@ -27,7 +27,7 @@ export default function RootLayout({
                   </nav>
                   <Button asChild size="sm" className="bg-gradient-to-r from-primary to-secondary text-white">
                     <Link href="/submit" className="flex items-center gap-2">
-                      Create Request
+                      Submit Request
                       <Plus className="h-4 w-4" />
                     </Link>
                   </Button>

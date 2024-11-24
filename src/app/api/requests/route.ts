@@ -1,35 +1,45 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import client from '@/lib/mongodb';
 
-const mockRequests = [
-    {
-        id: 1,
-        user: { id: 1, name: "John Doe" },
-        description: "Add more bike lanes",
-        location: "South Congress Avenue",
-        latitude: 30.2672,
-        longitude: -97.7431,
-        category: "infrastructure",
-        createdAt: "2024-03-10T10:00:00Z",
-        upvoteCount: 15
-    },
-    // ... more mock requests
-]
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function POST(request: Request) {
+  const { userId, description, location, lat, long, category } = await request.json();
+  try {
 
-export async function GET() {
-    return NextResponse.json(mockRequests)
+    await client.connect();
+    const db = client.db("acip");
+    const newSubmission = await db.collection("requests").insertOne({
+      userId,
+      description,
+      location: { lat, long },
+      locationName: location,
+      category: category || null,
+      createdAt: new Date().toISOString(),
+      upvoteCount: 0,
+    });
+    console.log("Submission successful", newSubmission.insertedId);
+    return NextResponse.json({ submissionId: newSubmission.insertedId }, { status: 201 });
+  } catch (e) {
+    console.error("Failed to insert submission:", e);
+    return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
+  } finally {
+    await client.close();
+  }
 }
 
-export async function POST(req: Request) {
-    const body = await req.json()
-
-    // Normally would validate and save to DB
-    const newRequest = {
-        id: mockRequests.length + 1,
-        user: { id: 1, name: "John Doe" }, // Would come from auth
-        ...body,
-        createdAt: new Date().toISOString(),
-        upvoteCount: 0
-    }
-
-    return NextResponse.json({ requestId: newRequest.id })
+export async function GET() {
+  try {
+    await client.connect();
+    const db = client.db("acip");
+    const requests = await db
+      .collection("requests")
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray();
+    return NextResponse.json(requests, { status: 200 });
+  } catch (e) {
+    return NextResponse.json(e, { status: 500 });
+  } finally {
+    await client.close();
+  }
 } 

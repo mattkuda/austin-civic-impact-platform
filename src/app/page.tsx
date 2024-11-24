@@ -8,7 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Plus } from "lucide-react"
+import { Calendar, ChevronRight, Lightbulb, Plus } from "lucide-react"
 import Link from "next/link"
 import { EventCard } from "../components/event-card"
 import { useQuery } from "@tanstack/react-query"
@@ -63,7 +63,15 @@ export default function HomePage() {
       <div className="container max-w-7xl mx-auto py-8">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Austin Civic Impact Platform</h1>
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Upcoming Events</h2>
+          <div className="text-2xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+            <Calendar size={32} />
+            <h2>Upcoming Events</h2>
+            <Button variant="link" size="sm" className="text-gray-500" asChild>
+              <Link href="/events">View All
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
           <Carousel className="w-full max-w-5xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               {events?.map((event) => (
@@ -79,10 +87,18 @@ export default function HomePage() {
 
         <section className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-700">Recent Requests</h2>
+            <div className="text-2xl font-semibold text-gray-700 flex items-center gap-2 align-middle">
+              <Lightbulb size={32} />
+              <h2>Community Requests</h2>
+              <Button variant="link" size="sm" className="text-gray-500" asChild>
+                <Link href="/requests">View All
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
             <Button asChild size="sm" className="bg-gradient-to-r from-primary to-secondary text-white">
               <Link href="/submit" className="flex items-center gap-2">
-                Create Request
+                Submit Request
                 <Plus className="h-4 w-4" />
               </Link>
             </Button>
@@ -92,7 +108,6 @@ export default function HomePage() {
               <RequestCard
                 key={request.id}
                 request={request}
-                onUpvote={(id) => console.log('Upvote request:', id)}
               />
             ))}
           </div>
