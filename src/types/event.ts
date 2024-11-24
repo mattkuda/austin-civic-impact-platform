@@ -14,6 +14,7 @@ export interface EventResponse {
 }
 
 export interface GeneratedEvent {
+    _id: string;
     title: string;               // Title of the event
     description: string;         // Detailed description of the event
     location: {                  // Event location
