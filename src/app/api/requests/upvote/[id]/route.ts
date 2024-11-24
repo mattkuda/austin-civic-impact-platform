@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
 import client from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
 export async function POST(
-    request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
