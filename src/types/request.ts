@@ -14,6 +14,8 @@ export interface Request {
     category?: string
     createdAt: string
     upvoteCount: number
+    eventId?: string
+    event?: Event
 }
 
 export interface RequestForm {

@@ -1,6 +1,7 @@
 import { Event } from "@/types"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation";
 
 interface EventCardProps {
     event: Event
@@ -9,12 +10,18 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, variant = 'full', showAttendButton = true }: EventCardProps) {
+    const router = useRouter();
+
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString()
     }
 
+    const handleCardClick = () => {
+        router.push(`/events/${event.id}`)
+    }
+
     return (
-        <Card className="border mesh-gradient">
+        <Card className="border mesh-gradient" onClick={handleCardClick}>
             <CardHeader>
                 <CardTitle className="text-lg text-gray-900">{event.title}</CardTitle>
             </CardHeader>

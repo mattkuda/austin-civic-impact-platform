@@ -4,7 +4,8 @@ export interface Event {
     description: string
     date: string
     attendees: number
-    // tools: string[]
+    location?: string
+    toolsRequired?: string
     category: string
 }
 
