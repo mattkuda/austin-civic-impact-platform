@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest
 ) {
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
     // TODO: Validate event with ID: params.id exists
     // TODO: Process attendance request from request body
     return NextResponse.json({ approved: true })

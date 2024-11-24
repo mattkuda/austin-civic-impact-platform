@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import client from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
 export async function POST(
-    { params }: { params: { id: string } }
+    request: NextRequest
 ) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
     try {
         await client.connect()
         const db = client.db("acip")
 
         const result = await db.collection("requests").updateOne(
-            { _id: new ObjectId(params.id) },
+            { _id: new ObjectId(id) },
             { $inc: { upvoteCount: 1 } }
         )
 
