@@ -1,36 +1,36 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import type { GoogleMap as GoogleMapType } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import type { GoogleMap as GoogleMapType } from "@react-google-maps/api";
 import { Lightbulb, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const AUSTIN_CENTER = {
+export const AUSTIN_CENTER = {
   lat: 30.2672,
-  lng: -97.7431
+  lng: -97.7431,
 };
 
 const mapContainerStyle = {
-  width: '100%',
-  height: '400px'
+  width: "100%",
+  height: "400px",
 };
 
 export default function SubmitSuggestionPage() {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     description: "",
     locationName: "",
     lat: AUSTIN_CENTER.lat.toString(),
     long: AUSTIN_CENTER.lng.toString(),
-    category: ""
+    category: "",
   });
   const [markerPosition, setMarkerPosition] = useState(AUSTIN_CENTER);
   const [searchAddress, setSearchAddress] = useState("");
@@ -41,19 +41,19 @@ export default function SubmitSuggestionPage() {
     const lng = e.latLng?.lng();
     if (lat && lng) {
       setMarkerPosition({ lat, lng });
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         lat: lat.toString(),
-        long: lng.toString()
+        long: lng.toString(),
       }));
 
       // Reverse geocode to get address
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ location: { lat, lng } }, (results, status) => {
         if (status === "OK" && results?.[0]) {
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
-            locationName: results[0].formatted_address
+            locationName: results[0].formatted_address,
           }));
         }
       });
@@ -73,11 +73,11 @@ export default function SubmitSuggestionPage() {
         const newPosition = { lat, lng };
 
         setMarkerPosition(newPosition);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           lat: lat.toString(),
           long: lng.toString(),
-          locationName: results[0].formatted_address
+          locationName: results[0].formatted_address,
         }));
 
         // Pan map to new location
@@ -108,7 +108,7 @@ export default function SubmitSuggestionPage() {
       });
 
       // Navigate to requests page after successful submission
-      router.push('/requests');
+      router.push("/requests");
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -126,6 +126,18 @@ export default function SubmitSuggestionPage() {
           <Lightbulb size={32} />
           Submit Request
         </h1>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast({
+              title: "Success!",
+              description: "Your request has been submitted successfully.",
+              variant: "success",
+            })
+          }
+        >
+          Toast
+        </Button>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>

@@ -10,7 +10,7 @@ import { Event, Request } from "../types";
 import { RequestCard } from "@/components/request-card";
 import { useState } from "react";
 import Map from "@/components/map";
-import { Leaderboard } from "@/components/leaderboard"
+import { Leaderboard } from "@/components/leaderboard";
 
 // // Mock data for events and requests
 // const events = [
@@ -22,9 +22,16 @@ import { Leaderboard } from "@/components/leaderboard"
 // ] as Event[]
 
 // const requests = [
-//   { id: 1, title: "Add more bike lanes", votes: 15 },
-//   { id: 2, title: "Expand community gardens", votes: 10 },
-//   { id: 3, title: "Improve public transportation", votes: 20 },
+//   { id: 1, description: "Add more bike lanes", votes: 15 },
+//   { id: 2, description: "Expand community gardens", votes: 10 },
+//   { id: 3, description: "Improve public transportation", votes: 20 },
+//   { id: 4, description: "Fix playground swing", votes: 25 },
+//   { id: 5, description: "Feed racoons", votes: 30 },
+//   { id: 6, description: "Clean up graffiti", votes: 18 },
+//   { id: 7, description: "Plant more trees", votes: 22 },
+//   { id: 8, description: "Fix street lights", votes: 12 },
+//   { id: 9, description: "Add recycling bins", votes: 28 },
+//   { id: 10, description: "Repair sidewalk cracks", votes: 15 }
 // ]
 
 const fetchEvents = async (): Promise<Event[]> => {
@@ -132,7 +139,71 @@ export default function HomePage() {
             <CarouselNext />
           </Carousel>
         </section>
+        <section className="mb-12">
+          <div className="text-2xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+            <Trophy size={32} />
+            <h2>Community Leaders</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-8">
+            {leaderboardQuery.data?.slice(0, 3).map((entry) => (
+              <div
+                key={entry.rank}
+                className={`p-6 rounded-lg border ${
+                  entry.rank === 1
+                    ? "bg-yellow-50 border-yellow-200"
+                    : entry.rank === 2
+                    ? "bg-gray-50 border-gray-200"
+                    : "bg-orange-50 border-orange-200"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-4xl">{entry.rank === 1 ? "🏆" : entry.rank === 2 ? "🥈" : "🥉"}</span>
+                  <span className="text-2xl font-bold">#{entry.rank}</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{entry.name}</h3>
+                <div className="space-y-1 text-gray-600">
+                  <p>{entry.points} points</p>
+                  <p>{entry.eventsParticipated} events participated</p>
+                </div>
+              </div>
+            ))}
+          </div>
 
+          {leaderboardQuery.data && leaderboardQuery.data.length > 3 && (
+            <div className="max-w-5xl mx-auto">
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rank
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Points
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Events
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {leaderboardQuery.data.slice(3).map((entry) => (
+                      <tr key={entry.rank} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">#{entry.rank}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-medium">{entry.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{entry.points}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{entry.eventsParticipated}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </section>
         <section className="mb-12">
           <div className="text-2xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
             <MapPin size={32} />

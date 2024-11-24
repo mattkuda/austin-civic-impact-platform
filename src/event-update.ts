@@ -1,8 +1,6 @@
 import LlamaStackClient from 'llama-stack-client';
 import { GeneratedEvent, Request } from './types';
-
-const ENDPOINT = "https://llama-stack.together.ai";
-const MODEL = "Llama3.1-8B-Instruct";
+import { ENDPOINT, MODEL } from './lib/utils';
 
 const llamaClient = new LlamaStackClient({ baseURL: ENDPOINT });
 
@@ -53,13 +51,7 @@ async function generateEventsForGroup(groupedRequests: Record<string, Request[]>
             });
             console.log('LLM response', response);
             const suggestedEvents = parseLlmResponse(response);
-            suggestedEvents.forEach(event => {
-                events.push({
-                    ...event,
-                    geohash,
-                    confidence: event.confidence || 0.5,
-                });
-            });
+            suggestedEvents.forEach(event => { events.push({ ...event, geohash, confidence: event.confidence || 0 }) });
         } catch (err) {
             console.error(`Failed to generate events for geohash ${geohash}:`, err);
         }
